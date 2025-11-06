@@ -5,26 +5,16 @@ from ..utils import ydl_functions
 
 router = APIRouter()
 
-class UrlData(BaseModel):
+class UrlParseParam(BaseModel):
     url: str
-    class Config:
-        json_schema_extra = {"example": {"url": "https://www.youtube.com/watch?v=pOvTbn0BzuY"}}
 
-class UrlFormatData(BaseModel):
+
+class DownloadParam(BaseModel):
     uid: str
     url: str
-    quality: str
-
-    class Config:
-        json_schema_extra = {"example":
-             {
-                "url": "https://www.youtube.com/watch?v=pOvTbn0BzuY",
-                "quality": "high"
-              }
-        }
 
 @router.post('/parse-url')
-async def parse_url(data: UrlData, request: Request):
+async def parse_url(data: UrlParseParam, request: Request):
     try:
         format_arr = ydl_functions.get_formats(data.url)
         results = []
@@ -37,23 +27,17 @@ async def parse_url(data: UrlData, request: Request):
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
+
 @router.post('/download-file')
-async def download(data: UrlFormatData, request: Request):
-    def progress_callback(s):
-        print(s)
-
+async def download(data: DownloadParam, request: Request):
     try:
-        quality_set = {"high", "low"}
-        if data.quality not in quality_set:
-            raise HTTPException(status_code=401, detail="Invalid quality")
-
         output_dir = "../frontend/public/download"
         os.makedirs(output_dir, exist_ok=True)
-        output_path = ydl_functions.download_video(data.uid, data.url, data.quality, output_dir, progress_callback)
+        output_path = ydl_functions.download_video(data.uid, data.url, output_dir)
         if output_path is None or not os.path.exists(output_path):
-            raise HTTPException(status_code=403, detail="Download failed")
+            raise Exception("Download failed!")
 
-        # Convert server path to URL accessible by client
+        # get file name
         file_name = os.path.relpath(output_path, output_dir)
 
         return {"file_name": file_name}

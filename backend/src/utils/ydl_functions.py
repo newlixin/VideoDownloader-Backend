@@ -27,26 +27,19 @@ def get_formats(url: str) -> list[dict]:
             and f["ext"] in ("mp4", "webm")
         ]
 
-
-quality_map = {
-    "high": "bestvideo+bestaudio/best",
-    "low": "best[height<=480]"
-}
-
-
-def download_video(uid: str, url: str, quality: str, output_dir: str, progress_hook: callable):
+def download_video(uid: str, url: str, output_dir: str):
     # hook function for downloading progress
     def hook(d):
         if d.get("status") == "downloading":
             downloaded = d.get("downloaded_bytes") or 0
             total = d.get("total_bytes") or d.get("total_bytes_estimate") or 1
             percent = downloaded / total * 100
-            progress_hook(percent)
+            print(f"{percent:.1f}%")
 
     # init options
     output_path = os.path.join(output_dir, f"{uid}.mp4")
     ydl_opts = {
-        "format": quality_map.get(quality),
+        "format": "bestvideo+bestaudio/best",
         "outtmpl": output_path,
         "progress_hooks": [hook],
         "quiet": True,
@@ -62,18 +55,9 @@ def download_video(uid: str, url: str, quality: str, output_dir: str, progress_h
     }
 
     # downloads video file
-    final_path = None
     with YoutubeDL(ydl_opts) as ydl:
         print("Starting downloads…")
         ydl.download([url])
-        progress_hook(100)
         print("Download and merge complete.")
 
-        # info = ydl.extract_info(url, download=False)
-        # title = info.get("title", "video")
-        # ext = "mp4"
-        # final_path = os.path.join(output_dir, f"{title}.{ext}")
-
-        final_path = output_path
-
-    return final_path
+    return output_path

@@ -15,8 +15,7 @@ export async function downloadVideo(url: string | null) {
       },
       body: JSON.stringify({
         "uid": uid,
-        "url": url,
-        "quality": "high"
+        "url": url
       })
     });
 

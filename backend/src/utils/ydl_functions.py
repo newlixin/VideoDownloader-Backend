@@ -1,8 +1,9 @@
 from yt_dlp import YoutubeDL
 import os
+from src.utils.common import output_dir
 
 # ───────────────────────── formats ──────────────────────────
-def get_formats(url: str) -> list[dict]:
+def get_formats(url: str) -> (str, list[dict]):
     """
     Return the available formats quickly.
 
@@ -20,14 +21,15 @@ def get_formats(url: str) -> list[dict]:
     }
     with YoutubeDL(ydl_opts) as ydl:
         info = ydl.extract_info(url, download=False)
-        return [
+        title = info.get('title')
+        return title, [
             f for f in info["formats"]
             if f.get("format_id")
             and (f.get("vcodec") != "none" or f.get("acodec") != "none")
             and f["ext"] in ("mp4", "webm")
         ]
 
-def download_video(uid: str, url: str, output_dir: str):
+def download_video(uid: str, url: str, resolution: str):
     # hook function for downloading progress
     def hook(d):
         if d.get("status") == "downloading":
@@ -38,8 +40,9 @@ def download_video(uid: str, url: str, output_dir: str):
 
     # init options
     output_path = os.path.join(output_dir, f"{uid}.mp4")
+    height = resolution.split("x")[1]
     ydl_opts = {
-        "format": "bestvideo+bestaudio/best",
+        "format": f"bestvideo[height={height}]+bestaudio",
         "outtmpl": output_path,
         "progress_hooks": [hook],
         "quiet": True,

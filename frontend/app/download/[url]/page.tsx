@@ -54,23 +54,27 @@ export default async function DownloadPage({ params }: { params: Promise<{ url: 
             <>
               <p className="text-3xl font-semibold mb-4 text-center text-blue-600">视频标题：{jsonData.title}</p>
               <br></br>
-              <p className="text-lg font-semibold mb-4 text-center text-blue-600">直接获取视频地址</p>
-              <div className="flex flex-col items-center space-y-8 sm:flex-row sm:justify-center sm:space-x-4 sm:space-y-0 bg-gray-100 p-2 rounded-lg w-full max-w-sm mx-auto">
-              <VideoParseButton videoUrl={decodedUrl}/>
+              <div className="mb-6">
+                <p className="text-lg font-semibold mb-4 text-center text-blue-600">直接获取视频地址</p>
+                <div className="flex justify-center">
+                  <div className="inline-flex bg-gray-100 p-10 rounded-lg">
+                    <VideoParseButton videoUrl={decodedUrl}/>
+                  </div>
+                </div>
               </div>
-              <br></br>
-              <br></br>
               <p className="text-lg font-semibold mb-4 text-center text-blue-600">从后端下载视频</p>
               {videoFormats && videoFormats.length > 0 ? (
-                <div className="flex flex-col items-center space-y-8 sm:flex-row sm:justify-center sm:space-x-4 sm:space-y-0 bg-gray-100 p-2 rounded-lg w-full max-w-lg mx-auto">
-                {videoFormats.map((item: VideoFormat) => (
-                  <div key={item.format_id} className="mb-4 sm:mb-0">
-                    <FormatDownloadButton 
-                      resolution={item.resolution}
-                      videoUrl={decodedUrl}
-                    />
+                <div className="flex justify-center">
+                  <div className="inline-flex bg-gray-100 p-6 rounded-lg">
+                    {videoFormats.map((item: VideoFormat) => (
+                      <div key={item.format_id} className="mb-4 sm:mb-0">
+                        <FormatDownloadButton 
+                          resolution={item.resolution}
+                          videoUrl={decodedUrl}
+                        />
+                      </div>
+                    ))}
                   </div>
-                ))}
                 </div>
               ) : (
                 <p>No video formats available</p>

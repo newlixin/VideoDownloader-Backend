@@ -42,11 +42,11 @@ export default function VideoParseButton({
   };
 
   return (
-    <div className="mb-4 relative">
+    <div className="relative">
       <button
         onClick={handleDownload}
         disabled={isDownloading}
-        className={`px-4 py-2 rounded-md mr-2 ${
+        className={`px-4 py-2 rounded-md ${
           isDownloading 
             ? "bg-gray-400 cursor-not-allowed" 
             : "bg-blue-500 hover:bg-blue-600 text-white"
@@ -56,7 +56,7 @@ export default function VideoParseButton({
       </button>
       
       {downloadResult && (
-        <div className="absolute top-full w-full flex justify-center">
+        <div className="absolute top-full w-full flex justify-center mt-1">
           {downloadResult.downloadUrl ? (
             <a 
               href={downloadResult.downloadUrl || "#"} 
